@@ -8,7 +8,7 @@ A collection of personal productivity tools crafted to streamline daily digital 
 
 | Tool Name | Description | Latest Version |
 |-----------|-------------|----------------|
-| [spdsrt](https://github.com/xhbl/ToolApps-VS/tree/master/spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.308](https://github.com/xhbl/ToolApps-VS/raw/refs/heads/master/Release/spdsrt.exe) |
+| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.308](Release/spdsrt.exe?raw=true) |
 
 ---
 
