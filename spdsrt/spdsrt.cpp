@@ -3,25 +3,13 @@
 
 #include "spdsrt.h"
 
-int main()
+int wmain(int argc, wchar_t* argv[])
 {
     // set console output UTF-16
-    int iRet = _setmode(_fileno(stdout), _O_U16TEXT);
-
-    // get full command line
-    LPWSTR commandLine = GetCommandLineW();
-
-    // parse command line
-    int argcp = 0;
-    LPWSTR* argvp = CommandLineToArgvW(commandLine, &argcp);
+    _setmode(_fileno(stdout), _O_U16TEXT);
 
     // do main function
-    iRet = DoSpdsrt(argcp, argvp);
-
-    // free argv memory
-    LocalFree(argvp);
-
-    return iRet;
+    return DoSpdsrt(argc, argv);
 }
 
 struct stMeta g_Meta;
@@ -49,24 +37,25 @@ size_t g_maxchCt = 30 * 2; /* Max CH Chars for a line */
 size_t g_maxenCt = 85;     /* Max EN Chars for a line */
 
 std::wstring g_szUsage =
-L"\nChinese/English bi-language unified subtitle formatter v3.1.25, Copyright(c) 2012-2025 by XHBL."
+L"\nStandard Presentation Designer for Chinese-English Bilingual Subtitles v3.1.25"
+L"\nCopyleft(c) 2012-2025 XHBL. This program is released under the GPL-3.0 License"
 L"\n"
 L"\nUsage: spdsrt input.srt [-b] [-u] [-s] [-k] [-t]"
 L"\n       spdsrt input.ass [-b] [-u] [-s] [-k] [-d] [-f] [-a] [-t] [-z<n>] [-c<n>]"
 L"\n"
-L"\n Input has to be a SRT/ASS file which contains Chinese/English bi-language content."
-L"\n Output are 9 files include formatted Chinese-English, English-Chinese,"
-L"\n Chinese, English SRT and ASS files (suffixed with .ce/.ec/.ch/.en/.or)."
+L"\n Input must be an SRT/ASS file containing Chinese/English bilingual content."
+L"\n Output are multiple files including formatted Chinese-English, English-Chinese,"
+L"\n Chinese, and English SRT and ASS files (suffixed with .ce/.ec/.ch/.en/.or)."
 L"\n"
-L"\n  -b    Chinese only single line adding round Brackets"
-L"\n  -u    Chinese only line(s) align Up-top in ASS"
-L"\n  -s    Merge multiple lines to a Single line, Chinese/English respectively"
-L"\n  -k    Keep empty line(s) for output"
-L"\n  -d    Discard all input ASS styles and use built-in styles for output"
-L"\n  -f    Use built-in Font style to overide input ASS font"
-L"\n  -a    Animated styles from input ASS skipped for output"
-L"\n  -t    Sort output by Timestamp"
-L"\n  -z<n> SiZe of font, z1-small z2-medium(default) z3-large"
+L"\n  -b    Add round Brackets to Chinese-only single line"
+L"\n  -u    Upper-align Chinese-only line(s) in output ASS"
+L"\n  -s    Merge multiple lines into a Single line, Chinese/English respectively"
+L"\n  -k    Keep empty line(s) in the output"
+L"\n  -d    Discard all input ASS styles and use built-in styles for the output"
+L"\n  -f    Use built-in Font style to override input ASS font"
+L"\n  -a    Skip Animated styles from input ASS in the output"
+L"\n  -t    Sort output by subtitle Timestamp"
+L"\n  -z<n> SiZe of the font: z1-small, z2-medium (default), z3-large"
 L"\n  -c<n> Color of English font, c1-yellow(default) c2-orange"
 L"\n"
 L"\nAux:   spdsrt input.ass -res<XXX>x<YYY>"
@@ -75,12 +64,12 @@ L"\n       spdsrt input.ass|srt -mf<FR>"
 L"\n"
 L"\n Some Auxiliary functions to adjust or check input ASS/SRT file."
 L"\n"
-L"\n  -res<Wx><H> Resize ASS resolution, <Wx> - width, <H> - height."
+L"\n  -res<Wx><H> Resize ASS play resolution, <Wx>-width, <H>-height."
 L"\n              Output file name suffixed with string .res"
 L"\n              Example: -res512x288, -res288, -res512x"
-L"\n  -169        Adjust wide screen(2.35:1) coordinates to 16:9 display."
+L"\n  -169        Adjust widescreen(2.35:1) coordinates to 16:9 display."
 L"\n              Output file name suffixed with string .169"
-L"\n  -mf<FR>     Print Maximum frames by frame rate, <FR> - frame rate. "
+L"\n  -mf<FR>     Get Maximum timestamp Frames by rate, <FR>-frame rate. "
 L"\n              Example: -mf23.976, -mf25"
 L"\n";
 
@@ -95,11 +84,11 @@ void InitMeta()
     g_Meta.iFontCh = 16;
     g_Meta.iFontChCal = 16;
     g_Meta.szFontEn = L"Tahoma";
-    g_Meta.iFontEn = 13;
-    g_Meta.iFontEnCal = 13;
+    g_Meta.iFontEn = 11;
+    g_Meta.iFontEnCal = 11;
     g_Meta.szFontDft = L"Tahoma";
-    g_Meta.iFontDft = 13;
-    g_Meta.iFontDftCal = 13;
+    g_Meta.iFontDft = 11;
+    g_Meta.iFontDftCal = 11;
     g_Meta.iMarginL = 5;
     g_Meta.iMarginR = 5;
     g_Meta.iMarginV = 5;
@@ -160,9 +149,9 @@ void UpdateMeta()
 
     switch (g_iFontSizeIdx)
     {
-    case 1: g_Meta.iFontCh = 15; g_Meta.iFontEn = 12; g_Meta.iFontDft = 12; break;          // small
-    case 3: g_Meta.iFontCh = 17; g_Meta.iFontEn = 14; g_Meta.iFontDft = 14; break;          // large
-    case 2: default: g_Meta.iFontCh = 16; g_Meta.iFontEn = 13; g_Meta.iFontDft = 13; break; // medium
+    case 1: g_Meta.iFontCh = 15; g_Meta.iFontEn = 10; g_Meta.iFontDft = 10; break;          // small
+    case 3: g_Meta.iFontCh = 17; g_Meta.iFontEn = 12; g_Meta.iFontDft = 12; break;          // large
+    case 2: default: g_Meta.iFontCh = 16; g_Meta.iFontEn = 11; g_Meta.iFontDft = 11; break; // medium
     }
 
     g_Meta.iFontChCal = static_cast<int>(std::round(fZoom * g_Meta.iFontCh));
