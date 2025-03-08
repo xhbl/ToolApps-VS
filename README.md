@@ -8,7 +8,7 @@ A collection of personal productivity tools crafted to streamline daily digital 
 
 | Tool Name | Description | Latest Version |
 |-----------|-------------|----------------|
-| [spdsrt](https://github.com/xhbl/ToolApps-VS/tree/master/spdsrt) | Chinese/English Bi-language Unified Subtitle Formatter | v3.1.25.308 |
+| [spdsrt](https://github.com/xhbl/ToolApps-VS/tree/master/spdsrt) | Chinese/English Bi-language Unified Subtitle Formatter | [v3.1.25.308](https://github.com/xhbl/ToolApps-VS/raw/refs/heads/master/Release/spdsrt.exe) |
 
 ---
 
