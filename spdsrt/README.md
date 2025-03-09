@@ -71,7 +71,7 @@ spdsrt input.ass|srt -mf<FR>
 | Options | Description | 中文描述 |
 |---------|------------|--------------|
 | `-res<Wx><H>` | Resize ASS play resolution, `<Wx>`-width, `<H>`-height. Output file name suffixed with `.res`, Example: -res512x288, -res288, -res512x | 调整 ASS 基准分辨率，输出文件名后缀 `.res` |
-| `-169` | Adjust widescreen(2.35:1) coordinates to 16:9 display. Output file name suffixed with `.169` (normally to position subtitles in Letterbox areas) | 调整宽屏(2.35:1)坐标到16:9模式，输出文件名后缀 `.169` (通常用于将画面内字幕移到黑边区域) |
+| `-169` | Map widescreen(2.35:1) coordinates to 16:9 display. Output file name suffixed with `.169` | 映射宽屏(2.35:1)坐标到16:9模式，输出文件名后缀 `.169` |
 | `-mf<FR>` | Get Maximum timestamp Frames by rate, `<FR>`-frame rate. Example: `-mf23.976`, `-mf25` | 输出字幕最大时间码对应的帧数 |
 
 ---

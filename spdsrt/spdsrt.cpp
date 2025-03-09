@@ -34,7 +34,7 @@ int g_iFontSizeIdx = 2;
 int g_iEnFontClrIdx = 1;
 
 size_t g_maxchCt = 30 * 2; /* Max CH Chars for a line */
-size_t g_maxenCt = 85;     /* Max EN Chars for a line */
+size_t g_maxenCt = 90;     /* Max EN Chars for a line */
 
 std::wstring g_szUsage =
 L"\nStandard Presentation Designer for Chinese-English Bilingual Subtitles v3.1.25"
@@ -67,7 +67,7 @@ L"\n"
 L"\n  -res<Wx><H> Resize ASS play resolution, <Wx>-width, <H>-height."
 L"\n              Output file name suffixed with string .res"
 L"\n              Example: -res512x288, -res288, -res512x"
-L"\n  -169        Adjust widescreen(2.35:1) coordinates to 16:9 display."
+L"\n  -169        Map widescreen(2.35:1) coordinates to 16:9 display."
 L"\n              Output file name suffixed with string .169"
 L"\n  -mf<FR>     Get Maximum timestamp Frames by rate, <FR>-frame rate. "
 L"\n              Example: -mf23.976, -mf25"
