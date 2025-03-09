@@ -14,6 +14,9 @@
 #include <unordered_set>
 #include <tuple>
 
+// 设置标准输出宽字符模式
+void SetStdoutModeW(bool bSet);
+
 // 替换字符串中的内容
 void StrReplaceW(std::wstring& str, const std::wstring& from, const std::wstring& to);
 

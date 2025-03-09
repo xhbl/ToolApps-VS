@@ -8,7 +8,7 @@ A collection of personal productivity tools crafted to streamline daily digital 
 
 | Tool Name | Description | Latest Version |
 |-----------|-------------|----------------|
-| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.308](Release/spdsrt.exe?raw=true) |
+| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.309](Release/spdsrt.exe?raw=true) |
 
 ---
 

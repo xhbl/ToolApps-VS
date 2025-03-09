@@ -3,6 +3,32 @@
 
 #include "spdsrt_utils.h"
 
+void SetStdoutModeW(bool bSet)
+{
+    static int svmode = -1;
+    static bool isSet = false;
+    if(bSet)
+    {
+        if (!isSet)
+        {
+            int cmode = _setmode(_fileno(stdout), _O_U16TEXT);
+            if (cmode != -1)
+            {
+                svmode = cmode;
+                isSet = true;
+            }
+        }
+    }
+    else
+    {
+        if (isSet)
+        {
+            if(_setmode(_fileno(stdout), svmode)!=-1)
+                isSet = false;
+        }
+    }
+}
+
 void StrReplaceW(std::wstring& str, const std::wstring& from, const std::wstring& to)
 {
     if (from.empty()) return; // 避免死循环
@@ -355,7 +381,7 @@ bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
         fnStr = fnStr.substr(0, pos);
 
     // 获取版本信息
-    DWORD dwHandle = NULL;
+    DWORD dwHandle = 0;
     DWORD dwFileSize = GetFileVersionInfoSize(filePath, &dwHandle);
     if (dwFileSize == 0) return false;
     BYTE* versionData = new BYTE[dwFileSize];

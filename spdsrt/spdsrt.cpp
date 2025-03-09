@@ -6,7 +6,7 @@
 int wmain(int argc, wchar_t* argv[])
 {
     // set console output UTF-16
-    _setmode(_fileno(stdout), _O_U16TEXT);
+    SetStdoutModeW(true);
 
     // do main function
     return DoSpdsrt(argc, argv);
@@ -1985,7 +1985,7 @@ int DoSpdsrt(int argc, wchar_t* argv[])
         g_bResizeAss = true;
     }
 
-    static const wchar_t* szArgs[] = 
+    static const wchar_t* szArgs[] =
     {
         L"-b", L"-u", L"-s", L"-k", L"-d", L"-f", L"-a", L"-t",
         L"-z1", L"-z2", L"-z3", L"-c1", L"-c2"
@@ -2059,7 +2059,8 @@ int DoSpdsrt(int argc, wchar_t* argv[])
     if (g_bCalMaxFrames)
     {
         int iMF = CalMaxFrames(dFPS);
-        wprintf(L"%d", iMF);
+        SetStdoutModeW(false);
+        printf("%d", iMF);
         return iMF;
     }
 
