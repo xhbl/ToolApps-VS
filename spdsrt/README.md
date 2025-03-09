@@ -5,6 +5,8 @@
 
 ![SPDSRT示例图](spdsrt_samp.jpg)
 
+[Dowload | 下载](../Release/spdsrt.exe?raw=true)
+
 ---
 
 ## Introduction | 简介
