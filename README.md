@@ -20,11 +20,11 @@ A collection of personal productivity tools crafted to streamline daily digital 
 ---
 
 ## License
-This project is licensed under [GPL 3.0 License](https://github.com/xhbl/ToolApps-VS/blob/master/LICENSE.txt). All tools in this repository are free to use, modify, and distribute under the terms of this license.
+This project is licensed under [GPL 3.0 License](LICENSE.txt). All tools in this repository are free to use, modify, and distribute under the terms of this license.
 
 ---
 
 ## Contact
-**E-mail**: [newxhbl@hotmail.com](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Issues**: [Open GitHub Issue](https://github.com/xhbl/ToolApps-VS/issues)  
+**E-mail**: [Send Email](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
+**Issues**: [Open Issue](../../issues)  
 
