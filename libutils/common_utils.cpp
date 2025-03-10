@@ -1,7 +1,7 @@
-﻿// spdsrt_utils.cpp : This file contains the commonly used utility functions.
+﻿// common_utils.cpp : This file contains the commonly used utility functions.
 //
 
-#include "spdsrt_utils.h"
+#include "common_utils.h"
 
 void SetStdoutModeW(bool bSet)
 {
@@ -29,14 +29,39 @@ void SetStdoutModeW(bool bSet)
     }
 }
 
+int ConPrintfW(const wchar_t* fmt, ...)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hConsole == INVALID_HANDLE_VALUE) return -1;
+    // get formatted length
+    va_list args;
+    va_start(args, fmt);
+    va_list args_copy;
+    va_copy(args_copy, args);
+    int length = _vscwprintf(fmt, args_copy);
+    va_end(args_copy);
+    if (length < 0) { va_end(args); return -1; }
+    // format to buffer
+    size_t bufferSize = static_cast<size_t>(length) + 1;
+    std::unique_ptr<wchar_t[]> buffer(new wchar_t[bufferSize]);
+    int written = _vsnwprintf_s(buffer.get(), bufferSize, _TRUNCATE, fmt, args);
+    va_end(args);
+    if (written != length) return -1;
+    // output to console
+    DWORD charsWritten = 0;
+    BOOL success = WriteConsoleW(hConsole, buffer.get(), written, &charsWritten, nullptr);
+    if (!success) return -1;
+    return static_cast<int>(charsWritten);
+}
+
 void StrReplaceW(std::wstring& str, const std::wstring& from, const std::wstring& to)
 {
-    if (from.empty()) return; // 避免死循环
+    if (from.empty()) return;
     size_t pos = 0;
     while ((pos = str.find(from, pos)) != std::wstring::npos)
     {
         str.replace(pos, from.length(), to);
-        pos += to.length(); // // 移动索引，防止死循环
+        pos += to.length();
     }
 }
 
@@ -48,10 +73,10 @@ std::wstring StrFormatW(const wchar_t* fmt, ...)
     va_list args;
     va_start(args, fmt);
 
-    // 复制参数列表（用于计算长度）
+    // Copy argument list (for length calculation)
     va_list args_copy;
     va_copy(args_copy, args);
-    // 第一次调用：获取格式化后的长度（不含终止符）
+    // First call: get formatted length (excluding null terminator)
     const int len = _vscwprintf(fmt, args_copy);
     va_end(args_copy);
     if (len <= 0)
@@ -60,9 +85,9 @@ std::wstring StrFormatW(const wchar_t* fmt, ...)
         return std::wstring();
     }
 
-    // 分配缓冲区（长度+终止符）
+    // Allocate buffer (length + null terminator)
     std::vector<wchar_t> buffer(len + 1);
-    // 第二次调用：实际写入格式化内容
+    // Second call: write formatted content
     const int written = std::vswprintf(buffer.data(), buffer.size(), fmt, args);
     va_end(args);
     if (written < 1)
@@ -88,21 +113,19 @@ size_t StriFindW(const std::wstring& str, const std::wstring& substr, size_t sta
     if (start_pos > str.size() || str.size() - start_pos < substr.size()) {
         return std::wstring::npos;
     }
-    // 遍历主字符串的每个可能的起始位置
+    // Iterate through each possible starting position in the main string
     for (size_t i = start_pos; i <= str.size() - substr.size(); ++i) {
         bool match = true;
-        // 检查当前位置是否匹配子字符串
+        // Check if current position matches the substring
         for (size_t j = 0; j < substr.size(); ++j) {
             if (std::towlower(str[i + j]) != std::towlower(substr[j])) {
                 match = false;
                 break;
             }
         }
-        if (match) {
-            return i; // 找到匹配，返回当前位置
-        }
+        if (match) return i; // Match found, return current position
     }
-    return std::wstring::npos; // 未找到匹配
+    return std::wstring::npos; // No match found
 }
 
 void StrTrimW(std::wstring& str, const wchar_t* tgt, int mode)
@@ -112,7 +135,7 @@ void StrTrimW(std::wstring& str, const wchar_t* tgt, int mode)
 
     switch (mode)
     {
-    case 0: // Trim 首尾
+    case 0: // Trim both head&end
     {
         size_t first = str.find_first_not_of(trim_chars);
         if (first == std::wstring::npos)
@@ -125,7 +148,7 @@ void StrTrimW(std::wstring& str, const wchar_t* tgt, int mode)
         break;
     }
 
-    case 1: // Trim 左侧
+    case 1: // // Trim left
     {
         size_t first = str.find_first_not_of(trim_chars);
         if (first != std::wstring::npos)
@@ -135,7 +158,7 @@ void StrTrimW(std::wstring& str, const wchar_t* tgt, int mode)
         break;
     }
 
-    case 2: // Trim 右侧
+    case 2: // Trim right
     {
         size_t last = str.find_last_not_of(trim_chars);
         if (last != std::wstring::npos)
@@ -164,7 +187,7 @@ int NumOfChars(const std::wstring& strTgt, wchar_t chFN)
     while ((nLocate = strTgt.find(chFN, nLocate)) != std::wstring::npos)
     {
         nCount++;
-        nLocate++; // 移动到下一个字符继续查找
+        nLocate++;
     }
 
     return nCount;
@@ -256,18 +279,18 @@ int ReadTextFileW(const wchar_t* filename, std::wstring& output, size_t maxrlen)
     if (!file.is_open())
         return GetLastError();
 
-    // 获取文件大小
+    // Get file size
     file.seekg(0, std::ios::end);
     size_t fileSize = static_cast<size_t>(file.tellg());
     file.seekg(0, std::ios::beg);
-    // 确定缓冲区大小
+    // Determine buffer size
     maxrlen = std::min<size_t>(maxrlen, fileSize);
     std::vector<char> buffer(maxrlen);
     file.read(buffer.data(), maxrlen);
     size_t bytesRead = static_cast<size_t>(file.gcount());
     file.close();
 
-    // 检查BOM（字节顺序标记）
+    // Check for BOM (Byte Order Mark)
     int encoding = 0; // 0: ANSI, 1: UTF-8, 2: UTF-16 LE, 3: UTF-16 BE
     size_t bomLength = 0;
     if (bytesRead >= 3 && buffer[0] == '\xEF' && buffer[1] == '\xBB' && buffer[2] == '\xBF')
@@ -288,14 +311,15 @@ int ReadTextFileW(const wchar_t* filename, std::wstring& output, size_t maxrlen)
             bomLength = 2;
         }
     }
-    // 如果没有BOM，尝试检测UTF-8（最多检测100个UTF-8字符）
+    // UTF-8 detection without BOM
     if (encoding == 0)
     {
         bool isUtf8 = true;
         size_t utf8CharsFound = 0;
+		// Check up to 100 UTF-8 characters
         for (size_t i = 0; i < bytesRead && utf8CharsFound < 100; ++i)
         {
-            if ((buffer[i] & 0x80) != 0) // 检查高位是否为1
+            if ((buffer[i] & 0x80) != 0)
             {
                 int followingBytes = 0;
                 if ((buffer[i] & 0xE0) == 0xC0)
@@ -325,7 +349,7 @@ int ReadTextFileW(const wchar_t* filename, std::wstring& output, size_t maxrlen)
             encoding = 1; // UTF-8 without BOM
     }
 
-    // 根据编码转换内容，跳过BOM
+    // Convert content based on encoding
     char* dataStart = buffer.data() + bomLength;
     size_t dataLength = (bytesRead >= bomLength) ? (bytesRead - bomLength) : 0;
     int result = 0;
@@ -372,7 +396,7 @@ bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
     DWORD dwSize = GetModuleFileName(nullptr, filePath, MAX_PATH);
     if (dwSize == 0) return false;
 
-    // 获取不带路径和扩展名的文件名
+    // Extract filename without path and extension
     std::wstring fullFileName(filePath);
     size_t pos = fullFileName.find_last_of(L"\\/");
     fnStr = (pos == std::wstring::npos) ? fullFileName : fullFileName.substr(pos + 1);
@@ -380,7 +404,7 @@ bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
     if (pos != std::wstring::npos)
         fnStr = fnStr.substr(0, pos);
 
-    // 获取版本信息
+    // Retrieve version information
     DWORD dwHandle = 0;
     DWORD dwFileSize = GetFileVersionInfoSize(filePath, &dwHandle);
     if (dwFileSize == 0) return false;

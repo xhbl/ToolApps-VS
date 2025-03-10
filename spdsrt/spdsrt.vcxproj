@@ -128,16 +128,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="spdsrt_utils.cpp" />
+    <ClCompile Include="..\libutils\common_utils.cpp" />
     <ClCompile Include="spdsrt.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="spdsrt_utils.h" />
+    <ClInclude Include="..\libutils\common_utils.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="spdsrt.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="spdsrt.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

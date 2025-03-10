@@ -5,7 +5,7 @@
 
 ![SPDSRT示例图](spdsrt_samp.jpg)
 
-[Dowload | 下载](../Release/spdsrt.exe?raw=true)
+[Download | 下载](../Release/spdsrt.exe?raw=true)
 
 ---
 
@@ -82,5 +82,5 @@ This project is licensed under [GPL 3.0 License](https://github.com/xhbl/ToolApp
 ---
 
 ## Contact
-**Direct Email**: [newxhbl@hotmail.com](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Bug Reports & Issues**: [Open GitHub Issue](https://github.com/xhbl/ToolApps-VS/issues)  
+**E-mail**: [newxhbl@hotmail.com](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
+**Issues**: [Open GitHub Issue](https://github.com/xhbl/ToolApps-VS/issues)  

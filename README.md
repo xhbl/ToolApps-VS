@@ -8,7 +8,7 @@ A collection of personal productivity tools crafted to streamline daily digital 
 
 | Tool Name | Description | Latest Version |
 |-----------|-------------|----------------|
-| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.309](Release/spdsrt.exe?raw=true) |
+| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.1.25.310](Release/spdsrt.exe?raw=true) |
 
 ---
 
@@ -25,6 +25,6 @@ This project is licensed under [GPL 3.0 License](https://github.com/xhbl/ToolApp
 ---
 
 ## Contact
-**Direct Email**: [newxhbl@hotmail.com](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Bug Reports & Issues**: [Open GitHub Issue](https://github.com/xhbl/ToolApps-VS/issues)  
+**E-mail**: [newxhbl@hotmail.com](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
+**Issues**: [Open GitHub Issue](https://github.com/xhbl/ToolApps-VS/issues)  
 
