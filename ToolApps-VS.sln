@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "About", "About", "{02EA681E
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utouch", "utouch\utouch.vcxproj", "{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,14 @@ Global
 		{18FD73F7-C5B3-488C-9AFA-77777053A49B}.Release|x64.Build.0 = Release|x64
 		{18FD73F7-C5B3-488C-9AFA-77777053A49B}.Release|x86.ActiveCfg = Release|Win32
 		{18FD73F7-C5B3-488C-9AFA-77777053A49B}.Release|x86.Build.0 = Release|Win32
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Debug|x64.ActiveCfg = Debug|x64
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Debug|x64.Build.0 = Debug|x64
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Debug|x86.Build.0 = Debug|Win32
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x64.ActiveCfg = Release|x64
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x64.Build.0 = Release|x64
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x86.ActiveCfg = Release|Win32
+		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

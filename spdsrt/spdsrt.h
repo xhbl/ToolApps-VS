@@ -2,7 +2,18 @@
 
 #include "../libutils/common_utils.h"
 
-int DoSpdsrt(int argc, wchar_t* argv[]);
+enum osfMode
+{
+    or_srt,  // 原始字幕
+    ec_srt,  // 英+中
+    ce_srt,  // 中+英
+    en_srt,  // 仅英文
+    ch_srt,  // 仅中文
+    ec_ass,  // ASS格式英中
+    ce_ass,  // ASS格式中英
+    en_ass,  // ASS仅英文
+    ch_ass   // ASS仅中文
+};
 
 struct stMeta
 {
@@ -73,15 +84,4 @@ public:
     CSrtNode() : nLine(0), bAssUnknown(false), bSrtDup(false), iAssKeep(0) {}
 };
 
-enum osfMode
-{
-    or_srt,  // 原始字幕
-    ec_srt,  // 英+中
-    ce_srt,  // 中+英
-    en_srt,  // 仅英文
-    ch_srt,  // 仅中文
-    ec_ass,  // ASS格式英中
-    ce_ass,  // ASS格式中英
-    en_ass,  // ASS仅英文
-    ch_ass   // ASS仅中文
-};
+int DoSpdsrt(int argc, wchar_t* argv[]);

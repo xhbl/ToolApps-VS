@@ -179,6 +179,22 @@ void StrTrimW(std::wstring& str, wchar_t chtgt, int mode)
     StrTrimW(str, tgt, mode);
 }
 
+std::wstring StrToUpperW(const std::wstring& str)
+{
+    std::wstring result;
+    for (wchar_t c : str)
+        result.push_back(std::towupper(c));
+    return result;
+}
+
+std::wstring StrToLowerW(const std::wstring& str)
+{
+    std::wstring result;
+    for (wchar_t c : str)
+        result.push_back(std::towlower(c));
+    return result;
+}
+
 int NumOfChars(const std::wstring& strTgt, wchar_t chFN)
 {
     int nCount = 0;
@@ -244,6 +260,67 @@ std::wstring NormalizeToCRLF(const std::wstring& input)
         }
     }
     return result;
+}
+
+bool ValidateDateStrW(const std::wstring& date_str, int* pyy, int* pmm, int* pdd)
+{
+    std::wregex pattern(L"^(?:"
+        L"(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})|"    // fmt1: YYYY-MM-DD or YYYY/MM/DD
+        L"(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4}))$"   // fmt2: MM-DD-YYYY or MM/DD/YYYY
+    );
+    std::wsmatch match;
+    if (!std::regex_match(date_str, match, pattern)) return false;
+    // extract and convert values
+    int year = 0, month = 0, day = 0;
+    if (!match[1].str().empty())    // fmt1
+    {
+        year = std::stoi(match[1]); month = std::stoi(match[2]); day = std::stoi(match[3]);
+    }
+    else    // fmt2
+    {
+        year = std::stoi(match[6]); month = std::stoi(match[4]); day = std::stoi(match[5]);
+    }
+    // validate
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+    static const std::array<int, 13> days_in_month =
+    {
+        0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+    bool is_leap = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+    int max_day = days_in_month[month];
+    if (month == 2 && is_leap) max_day = 29;
+    if (day > max_day) return false;
+    // output results
+    if (pyy != nullptr) *pyy = year;
+    if (pmm != nullptr) *pmm = month;
+    if (pdd != nullptr) *pdd = day;
+    return true;
+}
+
+bool ValidateTimeStrW(const std::wstring& time_str, int* phh, int* pmm, int* pss, int* pSSS)
+{
+    // hh:mm:ss[.SSS] format
+    std::wregex pattern(L"^([01]?\\d|2[0-3]):([0-5]?\\d):([0-5]?\\d)(?:\\.(\\d{1,3}))?$");
+    std::wsmatch match;
+    if (!std::regex_match(time_str, match, pattern)) return false;
+    // extract and convert values
+    int hours = std::stoi(match[1]);
+    int minutes = std::stoi(match[2]);
+    int seconds = std::stoi(match[3]);
+    int milliseconds = 0;
+    if (match[4].matched) milliseconds = std::stoi(match[4]);
+    // validate
+    if (hours < 0 || hours > 23) return false;
+    if (minutes < 0 || minutes > 59) return false;
+    if (seconds < 0 || seconds > 59) return false;
+    if (milliseconds < 0 || milliseconds > 999) return false;
+    // output results
+    if (phh != nullptr) *phh = hours;
+    if (pmm != nullptr) *pmm = minutes;
+    if (pss != nullptr) *pss = seconds;
+    if (pSSS != nullptr) *pSSS = milliseconds;
+    return true;
 }
 
 size_t ReadOneLine(const std::wstring& strText, std::wstring& strLine, size_t pos)
@@ -389,7 +466,57 @@ int ReadTextFileW(const wchar_t* filename, std::wstring& output, size_t maxrlen)
     return result;
 }
 
-#pragma comment(lib, "version.lib")
+enum enPEType PathExistType(const std::wstring& path)
+{
+    if (path.empty()) return PET_NONE;
+    const bool hasWildcard = path.find_first_of(L"*?") != std::wstring::npos;
+    if (hasWildcard)
+    {
+        WIN32_FIND_DATAW findData;
+        HANDLE hFind = ::FindFirstFileW(path.c_str(), &findData);
+        if (hFind != INVALID_HANDLE_VALUE)
+        {
+            ::FindClose(hFind);
+            return PET_WCEXIST;
+        }
+        const size_t lastSep = path.find_last_of(L"\\/");
+        const std::wstring dirPart = (lastSep != std::wstring::npos) ? path.substr(0, lastSep) : L"";
+        const std::wstring filePart = (lastSep != std::wstring::npos) ? path.substr(lastSep + 1) : path;
+        if (dirPart.find_first_of(L"*?") != std::wstring::npos)
+            return PET_NONE;
+        if (dirPart.empty())
+            return PET_WCDIRNA;
+        else
+        {
+            const DWORD dirAttrs = ::GetFileAttributesW(dirPart.c_str());
+            if (dirAttrs != INVALID_FILE_ATTRIBUTES && (dirAttrs & FILE_ATTRIBUTE_DIRECTORY))
+                return PET_WCDIROK;
+            else
+                return PET_WCDIRNO;
+        }
+    }
+    else
+    {
+        const DWORD attrs = ::GetFileAttributesW(path.c_str());
+        if (attrs == INVALID_FILE_ATTRIBUTES)
+            return PET_NONE;
+        if (attrs & FILE_ATTRIBUTE_DIRECTORY)
+            return PET_DIR;
+        else
+            return PET_FILE;
+    }
+}
+
+bool PathIsFile(const std::wstring& path)
+{
+    return PathExistType(path) == PET_FILE;
+}
+
+bool PathIsDir(const std::wstring& path)
+{
+    return PathExistType(path) == PET_DIR;
+}
+
 bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
 {
     wchar_t filePath[MAX_PATH];
@@ -404,16 +531,38 @@ bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
     if (pos != std::wstring::npos)
         fnStr = fnStr.substr(0, pos);
 
-    // Retrieve version information
+    // Load version retrieval functions
+    HMODULE hModule = LoadLibrary(L"version.dll");
+    if (!hModule) return false;
+    typedef DWORD(WINAPI* PFN_GETFILEVERSIONINFOSIZE)(LPWSTR, LPDWORD);
+    typedef BOOL(WINAPI* PFN_GETFILEVERSIONINFO)(LPWSTR, DWORD, DWORD, LPBYTE);
+    typedef BOOL(WINAPI* PFN_VERQUERYVALUE)(LPVOID, LPCWSTR, LPVOID*, PUINT);
+    PFN_GETFILEVERSIONINFOSIZE pGetFileVersionInfoSize =
+        (PFN_GETFILEVERSIONINFOSIZE)GetProcAddress(hModule, "GetFileVersionInfoSizeW");
+    PFN_GETFILEVERSIONINFO pGetFileVersionInfo =
+        (PFN_GETFILEVERSIONINFO)GetProcAddress(hModule, "GetFileVersionInfoW");
+    PFN_VERQUERYVALUE pVerQueryValue =
+        (PFN_VERQUERYVALUE)GetProcAddress(hModule, "VerQueryValueW");
+    if (!pGetFileVersionInfoSize || !pGetFileVersionInfo || !pVerQueryValue)
+    {
+        FreeLibrary(hModule);
+        return false;
+    }
     DWORD dwHandle = 0;
-    DWORD dwFileSize = GetFileVersionInfoSize(filePath, &dwHandle);
-    if (dwFileSize == 0) return false;
+    DWORD dwFileSize = pGetFileVersionInfoSize(filePath, &dwHandle);
+    if (dwFileSize == 0)
+    {
+        FreeLibrary(hModule);
+        return false;
+    }
+    // Read version information
+    bool bRet = false;
     BYTE* versionData = new BYTE[dwFileSize];
-    if (GetFileVersionInfo(filePath, dwHandle, dwFileSize, versionData))
+    if (pGetFileVersionInfo(filePath, dwHandle, dwFileSize, versionData))
     {
         VS_FIXEDFILEINFO* fileInfo = nullptr;
         UINT size = 0;
-        if (VerQueryValue(versionData, L"\\", (LPVOID*)&fileInfo, &size))
+        if (pVerQueryValue(versionData, L"\\", (LPVOID*)&fileInfo, &size))
         {
             if (fileInfo)
             {
@@ -425,14 +574,11 @@ bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)
                     std::to_wstring(minorVersion) + L"." +
                     std::to_wstring(buildNumber) + L"." +
                     std::to_wstring(revisionNumber);
+                bRet = true;
             }
         }
     }
-    else
-    {
-        delete[] versionData;
-        return false;
-    }
     delete[] versionData;
-    return true;
+    FreeLibrary(hModule);
+    return bRet;
 }
