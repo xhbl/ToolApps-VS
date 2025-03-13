@@ -86,11 +86,14 @@ enum enPEType
 };
 enum enPEType PathExistType(const std::wstring& path);
 
-// Check if a path is a file
-bool PathIsFile(const std::wstring& path);
+// Check if a path is a exist file
+bool PathExistFile(const std::wstring& path);
 
-// Check if a path is a directory
-bool PathIsDir(const std::wstring& path);
+// Check if a path is a exist directory
+bool PathExistDir(const std::wstring& path);
+
+// Trim trailing slashes from a path
+void PathTrimW(std::wstring& path, bool keeprootslash);
 
 // Get running program's name and version information
 bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr);

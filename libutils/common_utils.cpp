@@ -507,14 +507,27 @@ enum enPEType PathExistType(const std::wstring& path)
     }
 }
 
-bool PathIsFile(const std::wstring& path)
+bool PathExistFile(const std::wstring& path)
 {
     return PathExistType(path) == PET_FILE;
 }
 
-bool PathIsDir(const std::wstring& path)
+bool PathExistDir(const std::wstring& path)
 {
     return PathExistType(path) == PET_DIR;
+}
+
+void PathTrimW(std::wstring& path, bool keeprootslash)
+{
+    StrTrimW(path); // trim leading/trailing whitespace
+    if (path.empty()) return;
+    bool is_root = path.size() >= 3 && path[1] == L':' &&
+        ((path[0] >= L'A' && path[0] <= L'Z') || (path[0] >= L'a' && path[0] <= L'z')) &&
+        std::all_of(path.begin() + 2, path.end(), [](wchar_t c) { return c == L'/' || c == L'\\'; });
+    if (is_root)
+        path = path.substr(0, keeprootslash ? 3 : 2);
+    else
+        while (!path.empty() && (path.back() == L'/' || path.back() == L'\\')) path.pop_back();
 }
 
 bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)

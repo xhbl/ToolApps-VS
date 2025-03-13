@@ -4,6 +4,7 @@ int wmain(int argc, wchar_t* argv[])
 {
     // match system's environment
     setlocale(LC_ALL, "");
+    SetStdoutModeW(true);
 
     // do main function
     return DoUtouch(argc, argv);
@@ -247,7 +248,7 @@ int ParseOprParas(int argc, wchar_t* argv[], stOprPara& stOpr)
     {
         stOpr.eMode = OP_SDT;
         stOpr.fnDir = non_options[0];
-        if (!PathIsDir(stOpr.fnDir))
+        if (!PathExistDir(stOpr.fnDir))
         {
             stOpr.szMsg += L"Error: Directory path '" + stOpr.fnDir + L"' not exist.\n";
             return 3;
@@ -266,7 +267,7 @@ int ParseOprParas(int argc, wchar_t* argv[], stOprPara& stOpr)
                 return 2;
             }
             stOpr.fnDir = non_options[0];
-            if (!PathIsDir(stOpr.fnDir))
+            if (!PathExistDir(stOpr.fnDir))
             {
                 stOpr.szMsg += L"Error: Directory path '" + stOpr.fnDir + L"' not exist.\n";
                 return 3;
@@ -397,12 +398,49 @@ void KeepPartialDateTime(FILETIME* pstTmSet, const FILETIME* pstTmOrg, BOOL bKd,
     SystemTimeToFileTime(&stmSet, pstTmSet);
 }
 
+bool UtouchFTMFile(const std::wstring& fullPath, const WIN32_FIND_DATAW& wfd, stOprPara& stOpr)
+{
+    bool isDir = (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+    HANDLE hFile = CreateFileW(fullPath.c_str(), GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+        isDir ? FILE_FLAG_BACKUP_SEMANTICS : FILE_ATTRIBUTE_NORMAL, NULL);
+    bool bSuccess = false;
+    if (hFile != INVALID_HANDLE_VALUE)
+    {
+        // adjust time if required
+        FILETIME tmpW = stOpr.stTmW, tmpA = stOpr.stTmA, tmpC = stOpr.stTmC;
+        if (stOpr.bWt) KeepPartialDateTime(&tmpW, &wfd.ftLastWriteTime, stOpr.bKd, stOpr.bKt);
+        if (stOpr.bAt) KeepPartialDateTime(&tmpA, &wfd.ftLastAccessTime, stOpr.bKd, stOpr.bKt);
+        if (stOpr.bCt) KeepPartialDateTime(&tmpC, &wfd.ftCreationTime, stOpr.bKd, stOpr.bKt);
+        bSuccess = SetFileTime(hFile, stOpr.bCt ? &tmpC : NULL, stOpr.bAt ? &tmpA : NULL, stOpr.bWt ? &tmpW : NULL);
+        CloseHandle(hFile);
+        // verbose output
+        if (stOpr.bVerbose)
+        {
+            std::wstring flags;
+            FILETIME displayTime = { 0 };
+            if (stOpr.bWt) { flags += L'W'; displayTime = tmpW; }
+            if (stOpr.bCt) { flags += L'C'; if (flags.length() == 1) displayTime = tmpC; }
+            if (stOpr.bAt) { flags += L'A'; if (flags.length() == 1) displayTime = tmpA; }
+            std::wcout << L"[" << flags << L" -> " << FormatFileTime(displayTime, stOpr.bLt, true)
+                << L" " << (bSuccess ? L"OK" : L"FAIL") << L"] " << fullPath << std::endl;
+        }
+    }
+    if (!bSuccess)
+    {
+        stOpr.szMsg += L"Failed to touch file: " + fullPath + L"\n";
+    }
+    return bSuccess;
+}
+
 int UtouchFTM(stOprPara& stOpr)
 {
     bool bAllSuccess = true;
-    for (const auto& pattern : stOpr.fnFiles)
+    for (const auto& ff : stOpr.fnFiles)
     {
         WIN32_FIND_DATAW wfd;
+        std::wstring pattern = ff;
+        PathTrimW(pattern, true);   // remove trailing slashes
         HANDLE hFind = FindFirstFileW(pattern.c_str(), &wfd);
         if (hFind == INVALID_HANDLE_VALUE) {
             stOpr.szMsg += L"File not found: " + pattern + L"\n";
@@ -416,44 +454,82 @@ int UtouchFTM(stOprPara& stOpr)
             if (isDir && (!stOpr.bSf || wcscmp(wfd.cFileName, L".") == 0 || wcscmp(wfd.cFileName, L"..") == 0))
                 continue;
             // get full path
-            size_t pos = pattern.find_last_of(L"\\/");
-            std::wstring fullPath = (pos != std::wstring::npos) ?
-                pattern.substr(0, pos + 1) + wfd.cFileName : wfd.cFileName;
-            HANDLE hFile = CreateFileW(fullPath.c_str(), GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
-                isDir ? FILE_FLAG_BACKUP_SEMANTICS : FILE_ATTRIBUTE_NORMAL, NULL);
-            bool bSuccess = false;
-            if (hFile != INVALID_HANDLE_VALUE)
-            {
-                // adjust time if required
-                FILETIME tmpW = stOpr.stTmW, tmpA = stOpr.stTmA, tmpC = stOpr.stTmC;
-                if (stOpr.bWt) KeepPartialDateTime(&tmpW, &wfd.ftLastWriteTime, stOpr.bKd, stOpr.bKt);
-                if (stOpr.bAt) KeepPartialDateTime(&tmpA, &wfd.ftLastAccessTime, stOpr.bKd, stOpr.bKt);
-                if (stOpr.bCt) KeepPartialDateTime(&tmpC, &wfd.ftCreationTime, stOpr.bKd, stOpr.bKt);
-                if (SetFileTime(hFile, stOpr.bCt ? &tmpC : NULL, stOpr.bAt ? &tmpA : NULL, stOpr.bWt ? &tmpW : NULL))
-                    bSuccess = true;
-                CloseHandle(hFile);
-                // verbose output
-                if (stOpr.bVerbose)
-                {
-                    std::wstring flags;
-                    FILETIME displayTime = { 0 };
-                    if (stOpr.bWt) { flags += L'W'; displayTime = tmpW; }
-                    if (stOpr.bCt) { flags += L'C'; if (flags.length() == 1) displayTime = tmpC; }
-                    if (stOpr.bAt) { flags += L'A'; if (flags.length() == 1) displayTime = tmpA; }
-                    std::wcout << L"[" << flags << L" -> " << FormatFileTime(displayTime, stOpr.bLt, true)
-                        << L" " << (bSuccess ? L"OK" : L"FAIL") << L"] " << fullPath << std::endl;
-                }
-            }
-            if (!bSuccess)
-            {
-                stOpr.szMsg += L"Failed to touch file: " + fullPath + L"\n";
+            size_t pos = pattern.find_last_of(L"\\/:");
+            std::wstring fullPath = (pos != std::wstring::npos) ? pattern.substr(0, pos + 1) + wfd.cFileName : wfd.cFileName;
+            // touch file
+            if (!UtouchFTMFile(fullPath, wfd, stOpr))
                 bAllSuccess = false;
-            }
         } while (FindNextFileW(hFind, &wfd));
         FindClose(hFind);
     }
     return bAllSuccess ? 0 : 5;
+}
+
+void UtouchFTMRDir(const std::wstring& dirPath, stOprPara& stOpr, bool& bAllSuccess)
+{
+    std::wstring searchPath = dirPath + L"\\*.*";
+    WIN32_FIND_DATAW wfd;
+    HANDLE hFind = FindFirstFileW(searchPath.c_str(), &wfd);
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        stOpr.szMsg += L"Failed to search directory: " + dirPath + L"\n";
+        bAllSuccess = false;
+        return;
+    }
+    do
+    {
+        if (wcscmp(wfd.cFileName, L".") == 0 || wcscmp(wfd.cFileName, L"..") == 0) continue;
+        std::wstring fullPath = dirPath + L"\\" + wfd.cFileName;
+        bool isDir = (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        // process file
+        if (!isDir || stOpr.bSf)
+        {
+            if (!UtouchFTMFile(fullPath, wfd, stOpr))
+                bAllSuccess = false;
+        }
+        // process sub-directory
+        if (isDir) UtouchFTMRDir(fullPath, stOpr, bAllSuccess);
+    } while (FindNextFileW(hFind, &wfd));
+    FindClose(hFind);
+}
+
+int UtouchFTMR(stOprPara& stOpr)
+{
+    bool bAllSuccess = true;
+    std::wstring rootDir = stOpr.fnDir;
+    PathTrimW(rootDir, false);
+    // touch files recursively
+    UtouchFTMRDir(rootDir, stOpr, bAllSuccess);
+    // root directory to be touched if required
+    if (stOpr.bSf)
+    {
+        rootDir = stOpr.fnDir;
+        PathTrimW(rootDir, true);
+        bool bDriveRoot = (rootDir.size() == 3 && (rootDir[2] == L'\\' || rootDir[2] == L'/'));
+        if (!bDriveRoot)    // skip drive root
+        {
+            WIN32_FIND_DATAW wfdRoot;
+            HANDLE hRoot = FindFirstFileW(rootDir.c_str(), &wfdRoot);
+            if (hRoot != INVALID_HANDLE_VALUE)
+            {
+                bool isDir = (wfdRoot.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+                if (isDir && !UtouchFTMFile(rootDir, wfdRoot, stOpr))
+                    bAllSuccess = false;
+            }
+            else
+            {
+                stOpr.szMsg += L"Directory not found: " + rootDir + L"\n";
+                bAllSuccess = false;
+            }
+            FindClose(hRoot);
+        }
+    }
+    return bAllSuccess ? 0 : 5;
+}
+
+int UtouchSDT(stOprPara& stOpr)
+{
+    return 0;
 }
 
 // core function
@@ -474,8 +550,10 @@ int DoUtouch(int argc, wchar_t* argv[])
     // do operation
     if (oprPara.eMode == OP_FTM)
         iRet = UtouchFTM(oprPara);
+    else if (oprPara.eMode == OP_FTMR)
+        iRet = UtouchFTMR(oprPara);
     else if (oprPara.eMode == OP_SDT)
-        iRet = 6;
+        iRet = UtouchSDT(oprPara);
 
     // output message
     if (iRet) std::wcerr << oprPara.szMsg;

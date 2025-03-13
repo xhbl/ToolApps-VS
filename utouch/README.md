@@ -2,21 +2,27 @@
 
 **File and Directory Touch Utility with Default UTC Standard**  
 
-[Download | 下载](../Release/utouch.exe?raw=true)
+[Download](../Release/utouch.exe?raw=true)
 
 ---
 
-## Introduction | 简介
+## Introduction
 
-This command-line utility is a versatile tool for modifying file and directory timestamps, with a default adherence to the UTC time standard. Designed for flexibility, it supports precise adjustments to file creation, access, and write times, as well as directory time synchronization. Key features include:
+This command-line utility is a versatile tool for modifying file and directory timestamps, with a default adherence to the UTC time standard to ensure global consistency across time zones, eliminate daylight saving time (DST) ambiguities, and align with distributed systems or regulatory requirements. Designed for flexibility, it supports precise adjustments to file creation, access, and write times, as well as directory time synchronization. Key features include:
 
-​- **Timestamp Modification: Customize timestamps for files/directories using specific dates (/D), times (/T), or reference files (/F). Users can target write (/W), access (/A), or creation (/C) times individually or in combination, with options to retain original attributes (/K) or use local time (/L).
-​- **Recursive Processing: Apply changes recursively (/R) across directories and subdirectories.
-​- **Directory Synchronization: Sync directory write times to match the latest timestamp of contained files recursively (/SD), ideal for maintaining consistent backup or project folder metadata.
+
+- Timestamp Modification: Customize timestamps for files/directories using specific dates (/D), times (/T), or reference files (/F). Users can target write (/W), access (/A), or creation (/C) times individually or in combination, with options to retain original attributes (/K) or use local time (/L).
+​
+- Recursive Processing: Apply changes recursively (/R) across directories and subdirectories.
+​
+- Directory Synchronization: Sync directory write times to match the latest timestamp of contained files recursively (/SD), ideal for maintaining consistent backup or project folder metadata.
+
+By defaulting to UTC, the tool avoids regional time discrepancies, simplifies cross-team collaboration, and ensures reliable timestamp operations in cloud environments, automated workflows, or multi-region deployments.
+
 
 ---
 
-## Usage | 使用方法
+## Usage
 
 Run the program in the command line terminal. | 请在命令行终端里执行本程序。
 
@@ -27,7 +33,7 @@ utouch /SD [/V] directory
 
 ---
 
-## Options | 参数选项
+## Options
 
 | Options      | Description                                                                 |
 |--------------|-----------------------------------------------------------------------------|
