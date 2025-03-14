@@ -25,6 +25,7 @@ struct stOprPara
     bool bKt;
     bool bLt;
     bool bVerbose;
+    std::uint64_t nTmSD;
     std::wstring szMsg;
 };
 

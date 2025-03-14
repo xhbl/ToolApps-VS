@@ -92,8 +92,11 @@ bool PathExistFile(const std::wstring& path);
 // Check if a path is a exist directory
 bool PathExistDir(const std::wstring& path);
 
-// Trim trailing slashes from a path
-void PathTrimW(std::wstring& path, bool keeprootslash);
+// Normalize path string
+void PathNormalizeW(std::wstring& path, bool keeprootslash, bool normalizeslash = false);
+
+// Append file name to path
+std::wstring PathAppendFileW(const std::wstring& path, const std::wstring& file);
 
 // Get running program's name and version information
 bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr);

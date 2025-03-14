@@ -7,7 +7,7 @@ void SetStdoutModeW(bool bSet)
 {
     static int svmode = -1;
     static bool isSet = false;
-    if(bSet)
+    if (bSet)
     {
         if (!isSet)
         {
@@ -23,7 +23,7 @@ void SetStdoutModeW(bool bSet)
     {
         if (isSet)
         {
-            if(_setmode(_fileno(stdout), svmode)!=-1)
+            if (_setmode(_fileno(stdout), svmode) != -1)
                 isSet = false;
         }
     }
@@ -393,7 +393,7 @@ int ReadTextFileW(const wchar_t* filename, std::wstring& output, size_t maxrlen)
     {
         bool isUtf8 = true;
         size_t utf8CharsFound = 0;
-		// Check up to 100 UTF-8 characters
+        // Check up to 100 UTF-8 characters
         for (size_t i = 0; i < bytesRead && utf8CharsFound < 100; ++i)
         {
             if ((buffer[i] & 0x80) != 0)
@@ -517,17 +517,30 @@ bool PathExistDir(const std::wstring& path)
     return PathExistType(path) == PET_DIR;
 }
 
-void PathTrimW(std::wstring& path, bool keeprootslash)
+void PathNormalizeW(std::wstring& path, bool keeprootslash, bool normalizeslash)
 {
-    StrTrimW(path); // trim leading/trailing whitespace
+    StrTrimW(path);
     if (path.empty()) return;
-    bool is_root = path.size() >= 3 && path[1] == L':' &&
-        ((path[0] >= L'A' && path[0] <= L'Z') || (path[0] >= L'a' && path[0] <= L'z')) &&
-        std::all_of(path.begin() + 2, path.end(), [](wchar_t c) { return c == L'/' || c == L'\\'; });
-    if (is_root)
-        path = path.substr(0, keeprootslash ? 3 : 2);
+    bool is_slashroot = path.find_last_not_of(L"/\\") == std::wstring::npos;
+    if (is_slashroot) path.resize(keeprootslash ? 1 : 0);
     else
-        while (!path.empty() && (path.back() == L'/' || path.back() == L'\\')) path.pop_back();
+    {
+        bool is_driveroot = path.size() >= 3 && path[1] == L':' && path.find_last_not_of(L"/\\") == 1 &&
+            ((path[0] >= L'A' && path[0] <= L'Z') || (path[0] >= L'a' && path[0] <= L'z'));
+        if (is_driveroot) path.resize(keeprootslash ? 3 : 2);
+        else
+            while (!path.empty() && (path.back() == L'/' || path.back() == L'\\')) path.pop_back();
+    }
+    if(normalizeslash) std::replace(path.begin(), path.end(), '/', '\\');
+}
+
+std::wstring PathAppendFileW(const std::wstring& path, const std::wstring& file)
+{
+    if (file.empty()) return path;
+    std::wstring slashNeed = L"\\";
+    if (path.empty() || path.back() == L'\\' || path.back() == L'/' || (path.size() == 2 && path[1] == L':'))
+        slashNeed.clear(); // current path with no need slash appended
+    return path + slashNeed + file;
 }
 
 bool GetFileVerStrW(std::wstring& fnStr, std::wstring& verStr)

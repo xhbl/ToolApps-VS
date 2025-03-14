@@ -76,11 +76,13 @@ spdsrt input.ass|srt -mf<FR>
 
 ---
 
-## License
+## License | 许可协议
 This project is licensed under [GPL 3.0 License](../LICENSE.txt). All tools in this repository are free to use, modify, and distribute under the terms of this license.
+
+本项目遵循 [GPL 3.0 协议](../LICENSE.txt) 授权。本仓库中所有工具均可在该协议条款下自由使用、修改和分发。
 
 ---
 
-## Contact
-**E-mail**: [Send Email](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Issues**: [Open Issue](../../issues)  
+## Contact | 联系我们
+**E-mail | 邮箱**: [Send Email | 发送邮件](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
+**Issues | 问题**: [Open Issue | 提交问题](../../issues)  

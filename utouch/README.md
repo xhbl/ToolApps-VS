@@ -24,12 +24,16 @@ By defaulting to UTC, the tool avoids regional time discrepancies, simplifies cr
 
 ## Usage
 
-Run the program in the command line terminal. | 请在命令行终端里执行本程序。
+Run the program in the command line terminal.
 
 ```
 utouch [/W] [/A] [/C] [/S] [/L] [/K] [/D date] [/T time] [/F file] [/R] [/V] files|directory
+utouch [-w] [-a] [-c] [-s] [-l] [-k] [-d date] [-t time] [-f file] [-r] [-v] files|directory
 utouch /SD [/V] directory
+utouch -sd [-v] directory
 ```
+Note: Options support both slash (/) and dash (-) prefixes with case-insensitive 
+and order-insensitive semantics. Parameters follow their designated options.
 
 ---
 
@@ -43,7 +47,7 @@ utouch /SD [/V] directory
 | `/S`         | Process directories (default: only files are touched)                      |
 | `/L`         | Use local time instead of UTC                                              |
 | `/K`         | Keep original date/time if `/D` or `/T` is not specified; else use current |
-| `/D date`    | Set date in `mm-dd-yyyy` or `yyyy-mm-dd` format                            |
+| `/D date`    | Set date in `mm-dd-yyyy` or `yyyy-mm-dd` format ('/' separator also ok)    |
 | `/T time`    | Set time in `hh:mm:ss` (24-hour format)                                    |
 | `/F file`    | Use timestamp from a specified reference file                              |
 | `/R`         | Recursively process all contents under a directory                         |

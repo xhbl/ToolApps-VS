@@ -8,8 +8,8 @@ A collection of personal productivity tools crafted to streamline daily digital 
 
 | Tool Name | Description | Latest Version |
 |-----------|-------------|----------------|
-| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.2.25.312](Release/spdsrt.exe?raw=true) |
-| [utouch](utouch) | File and Directory Touch Utility with Default UTC Standard | [v3.2.25.312](Release/utouch.exe?raw=true) |
+| [spdsrt](spdsrt) | Standard Presentation Designer for Chinese-English Bilingual Subtitles | [v3.2.25.314](Release/spdsrt.exe?raw=true) |
+| [utouch](utouch) | File and Directory Touch Utility with Default UTC Standard | [v3.2.25.314](Release/utouch.exe?raw=true) |
 
 ---
 
