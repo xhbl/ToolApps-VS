@@ -65,4 +65,4 @@ This project is licensed under [GPL 3.0 License](../LICENSE.txt). All tools in t
 
 ## Contact
 **E-mail**: [Send Email](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Issues**: [Open Issue](../../issues)  
+**Issues**: [Open Issue](../../../issues)  

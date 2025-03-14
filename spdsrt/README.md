@@ -85,4 +85,4 @@ This project is licensed under [GPL 3.0 License](../LICENSE.txt). All tools in t
 
 ## Contact | 联系我们
 **E-mail | 邮箱**: [Send Email | 发送邮件](mailto:newxhbl@hotmail.com?subject=[ToolApps-VS]%20Inquiry)  
-**Issues | 问题**: [Open Issue | 提交问题](../../issues)  
+**Issues | 问题**: [Open Issue | 提交问题](../../../issues)  
