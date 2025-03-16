@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "About", "About", "{02EA681E
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utouch", "utouch\utouch.vcxproj", "{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "btlcks", "btlcks\btlcks.vcxproj", "{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -37,6 +39,14 @@ Global
 		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x64.Build.0 = Release|x64
 		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x86.ActiveCfg = Release|Win32
 		{702838F8-3D31-4FB7-A1A5-6ACFF5EDF6CA}.Release|x86.Build.0 = Release|Win32
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Debug|x64.ActiveCfg = Debug|x64
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Debug|x64.Build.0 = Debug|x64
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Debug|x86.ActiveCfg = Debug|Win32
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Debug|x86.Build.0 = Debug|Win32
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Release|x64.ActiveCfg = Release|x64
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Release|x64.Build.0 = Release|x64
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Release|x86.ActiveCfg = Release|Win32
+		{558A9C55-0745-46BD-BDCD-5F7772A0BEDC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
